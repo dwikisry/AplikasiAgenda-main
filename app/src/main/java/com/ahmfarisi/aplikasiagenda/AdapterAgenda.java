@@ -3,6 +3,7 @@ package com.ahmfarisi.aplikasiagenda;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -56,13 +57,12 @@ public class AdapterAgenda extends RecyclerView.Adapter<AdapterAgenda.VHAgenda> 
             tvJam = itemView.findViewById(R.id.tv_jam);
             tvKegiatan = itemView.findViewById(R.id.tv_kegiatan);
 
-
             itemView.setOnLongClickListener(new View.OnLongClickListener() {
                 @Override
                 public boolean onLongClick(View v) {
                     AlertDialog.Builder pesan = new AlertDialog.Builder(ctx);
                     pesan.setTitle("Perhatian");
-                    pesan.setMessage("Anda memilih agenda dengan ID"+ tvId.getText().toString()+ "Perintah apa yang anda inginkan?");
+                    pesan.setMessage("Anda memilih Agenda dengan ID " + tvId.getText().toString() + ". Perintah apa yang Anda inginkan?");
                     pesan.setCancelable(true);
 
                     pesan.setNegativeButton("Hapus", new DialogInterface.OnClickListener() {
@@ -70,14 +70,13 @@ public class AdapterAgenda extends RecyclerView.Adapter<AdapterAgenda.VHAgenda> 
                         public void onClick(DialogInterface dialog, int which) {
                             MyDatabaseHelper myDB = new MyDatabaseHelper(ctx);
                             long eks = myDB.hapusAgenda(tvId.getText().toString());
-                            if (eks == -1){
-                                Toast.makeText(ctx, "Gagal Menghapus Data", Toast.LENGTH_SHORT).show();
-                                dialog.dismiss();
+                            if(eks == -1){
+                                Toast.makeText(ctx, "Gagal Menghapus Data!", Toast.LENGTH_SHORT).show();
                             }
-                            else {
+                            else{
                                 Toast.makeText(ctx, "Sukses Menghapus Data!", Toast.LENGTH_SHORT).show();
                                 dialog.dismiss();
-                                ((MainActivity)ctx).onResume();
+                                ((MainActivity) ctx).onResume();
                             }
                         }
                     });
@@ -85,15 +84,28 @@ public class AdapterAgenda extends RecyclerView.Adapter<AdapterAgenda.VHAgenda> 
                     pesan.setPositiveButton("Ubah", new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
+                            String varId, varTanggal, varJam, varKegiatan;
+
+                            varId = tvId.getText().toString();
+                            varTanggal = tvTanggal.getText().toString();
+                            varJam = tvJam.getText().toString();
+                            varKegiatan = tvKegiatan.getText().toString();
+
+                            Intent kirim = new Intent(ctx, UbahActivity.class);
+                            kirim.putExtra("xId", varId);
+                            kirim.putExtra("xTanggal", varTanggal);
+                            kirim.putExtra("xJam", varJam);
+                            kirim.putExtra("xKegiatan", varKegiatan);
+                            ctx.startActivity(kirim);
 
                         }
                     });
 
                     pesan.show();
                     return false;
-
                 }
             });
+
         }
     }
 
